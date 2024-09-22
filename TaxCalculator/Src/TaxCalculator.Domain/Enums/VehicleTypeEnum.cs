@@ -1,6 +1,6 @@
 ﻿namespace TaxCalculator.Domain.Enums
 {
-    internal enum VehicleTypeEnum
+    public enum VehicleTypeEnum
     {
         EmergencyVehicle = 0,
         Buss = 1,

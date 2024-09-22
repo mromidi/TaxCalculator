@@ -2,9 +2,10 @@
 
 namespace TaxCalculator.Domain.Repositories
 {
-    internal interface IVehicleEntryRepository
+    public interface IVehicleEntryRepository
     {
         Task<VehicleEntry> AddVehicleEntryAsync(VehicleEntry entity);
         Task<List<VehicleEntry>> GetVehicleEntryAsync(DateTime entryDate);
+        Task<List<VehicleEntry>> GetVehicleEntryAsync(int year);
     }
 }

@@ -3,7 +3,7 @@ using TaxCalculator.Domain.Enums;
 
 namespace TaxCalculator.Domain.Entities
 {
-    internal class VehicleEntry
+    public class VehicleEntry
     {
         /// <summary>
         /// A unique identifier for the vehicle, such as a registration number or VIN.
@@ -23,10 +23,6 @@ namespace TaxCalculator.Domain.Entities
         /// </summary>
         public DateTime EntryTime { get; set; }
 
-        /// <summary>
-        /// The tax amount calculated for this entry. This will be filled in by the rule engine.
-        /// </summary>
-        public decimal TaxAmount { get; set; }
 
         /// <summary>
         /// The toll station or zone identifier if multiple toll points exist.

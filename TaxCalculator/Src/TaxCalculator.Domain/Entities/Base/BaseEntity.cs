@@ -1,6 +1,6 @@
 ﻿namespace TaxCalculator.Domain.Entities.Base
 {
-    internal class BaseEntity
+    public class BaseEntity
     {
         public int Id { get; set; }
         public DateTime CreateDate { get; set; }
