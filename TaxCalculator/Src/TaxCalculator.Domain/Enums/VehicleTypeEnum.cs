@@ -2,13 +2,14 @@
 {
     public enum VehicleTypeEnum
     {
-        EmergencyVehicle = 0,
+        Emergency = 0,
         Buss = 1,
-        Diplomat_Vehicles = 2,
+        Diplomat = 2,
         Motorcycle = 3,
-        Military_Vehicles = 4,
-        Foreign_Vehicles = 5
+        Military = 4,
+        Foreign = 5,
+        Sport = 6,
     }
 
-    
+
 }

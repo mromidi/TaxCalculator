@@ -16,11 +16,11 @@ namespace TaxCalculator.Domain.Rules
             return _exemptVehicleTypes.Contains(entry.VehicleType.ToString());
         }
 
-        public decimal CalculateTax(VehicleEntry entry, TaxCalculationContext context)
+        public void CalculateTax(VehicleEntry entry, TaxCalculationContext context)
         {
+            Console.WriteLine($"VehicleExemptionRule is fired");
             context.CurrentTaxAmount = 0;
             context.IsTaxExempt = true;
-            return 0;
         }
 
 

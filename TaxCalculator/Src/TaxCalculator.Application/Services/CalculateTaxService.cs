@@ -1,4 +1,6 @@
-﻿using TaxCalculator.Application.Services.Abstractions;
+﻿using TaxCalculator.Application.Dtos;
+using TaxCalculator.Application.Services.Abstractions;
+using TaxCalculator.Domain.Entities;
 using TaxCalculator.Domain.Repositories;
 using TaxCalculator.Domain.Rules;
 
@@ -14,57 +16,85 @@ namespace TaxCalculator.Application.Services
             _cityRulesDetailRepository = cityRulesDetailRepository;
         }
 
-        public async Task CalculateTaxForYear(int year, string cityName)
+        public async Task<List<string>> CalculateTaxForYear(int year, string cityName)
         {
-            var cityRules = await _cityRulesDetailRepository.GetActiveCityRulesDetail();
+            var cityRules = await _cityRulesDetailRepository.GetActiveCityRulesDetail(year, cityName);
 
             var allEntries = await _vehicleEntryRepository.GetVehicleEntryAsync(year);
 
-            var groupedEntries = allEntries
-           .GroupBy(entry => entry.EntryTime.Date) // Group by date
-           .Select(group => new
-           {
-               Date = group.Key,
-               Vehicles = group.GroupBy(entry => entry.VehicleNumber) // Group by vehicle Number
-           });
+            var groupedEntries = GenerateGroupedEntries(allEntries);
+            return EntriesTaxProcess(groupedEntries, cityRules);
 
-            var rules = new List<ITravelRule>
-            {
-                new WeekendAndHolidayRule(cityRules.NonTaxablePeriods),
-                new VehicleExemptionRule(cityRules.ExemptVehicles),
-                new CalculateTaxRule(cityRules.TaxRules),
-                new SingleChargeRule()
-
-            };
+        }
+        private List<string> EntriesTaxProcess(IEnumerable<DateGroup> groupedEntries, CityRulesDetail cityRules)
+        {
+            var response = new List<string>();
+            var rules = GenerateRules(cityRules);
 
             var ruleEngine = new RuleEngine(rules);
 
-
             foreach (var dateGroup in groupedEntries)
             {
-                Console.WriteLine($"Processing entries for date: {dateGroup.Date}");
+                string message = string.Empty;
+                message = $"Processing entries for date: {dateGroup.Date}\n";
+                response.Add(message);
+                response.Add(string.Empty);
+                Console.WriteLine(message);
 
                 foreach (var vehicleGroup in dateGroup.Vehicles)
                 {
+                    var context = new TaxCalculationContext();
                     decimal totalDailyTax = 0;
 
                     var orderedEntries = vehicleGroup.OrderBy(o => o.EntryTime);
+
                     foreach (var entry in orderedEntries)
                     {
-                        var tax = ruleEngine.CalculateTaxAmount(entry);
-                        totalDailyTax += tax;
-                        if (totalDailyTax > 60)
+
+                        ruleEngine.CalculateTaxAmount(entry, context);
+
+
+                        totalDailyTax = context.PaidInfo.Where(w => w.IsPaid).Sum(s => s.Amount);
+
+                        if (totalDailyTax > cityRules.MaxDailyTax)
                         {
-                            totalDailyTax = 60;
+                            totalDailyTax = cityRules.MaxDailyTax;
                             break;
                         }
-                        Console.WriteLine($"Vehicle {entry.VehicleNumber} taxed: SEK {tax} at {entry.EntryTime}");
+                        message = $"Vehicle {entry.VehicleNumber} taxed: SEK {context.CurrentTaxAmount} at {entry.EntryTime}";
+                        response.Add(message);
+                        Console.WriteLine(message);
                     }
-
-                    Console.WriteLine($"Total tax for vehicle {vehicleGroup.Key} on {dateGroup.Date}: SEK {totalDailyTax}");
+                    message = $"Total tax for vehicle {vehicleGroup.Key} on {dateGroup.Date.ToShortDateString()}: SEK {totalDailyTax}\n";
+                    response.Add(message);
+                    response.Add(string.Empty);
+                    Console.WriteLine(message);
                 }
             }
+            return response;
         }
 
+        private List<ITravelRule> GenerateRules(CityRulesDetail cityRules)
+        {
+            return new List<ITravelRule>
+            {
+                new WeekendAndHolidayRule(cityRules.NonTaxablePeriods),
+                new VehicleExemptionRule(cityRules.ExemptVehicles),
+                new CalculateTaxRule(cityRules.HourTaxRules),
+                new SingleChargeRule()
+
+            };
+        }
+
+        private IEnumerable<DateGroup> GenerateGroupedEntries(List<VehicleEntry> allEntries)
+        {
+            return allEntries
+           .GroupBy(entry => entry.EntryTime.Date)
+           .Select(group => new DateGroup
+           {
+               Date = group.Key,
+               Vehicles = group.GroupBy(entry => entry.VehicleNumber)
+           });
+        }
     }
 }

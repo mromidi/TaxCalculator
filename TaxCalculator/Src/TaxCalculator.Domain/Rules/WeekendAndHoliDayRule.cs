@@ -19,13 +19,15 @@ namespace TaxCalculator.Domain.Rules
             return IsWeekend(entryDate) || IsPublicHoliday(entryDate) || IsJuly(entryDate);
         }
 
-        public decimal CalculateTax(VehicleEntry entry, TaxCalculationContext context)
+        public void CalculateTax(VehicleEntry entry, TaxCalculationContext context)
         {
+            Console.WriteLine($"WeekendAndHolidayRule is fired");
             context.CurrentTaxAmount = 0;
             context.IsTaxExempt = true;
-            return 0;
         }
 
+        #region Private Methods
+       
         private bool IsWeekend(DateTime date)
         {
             return _nonTaxablePeriods.Weekends && (date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday);
@@ -40,6 +42,8 @@ namespace TaxCalculator.Domain.Rules
         {
             return _nonTaxablePeriods.MonthOfJuly && date.Month == 7;
         }
+
+        #endregion
     }
 
 }

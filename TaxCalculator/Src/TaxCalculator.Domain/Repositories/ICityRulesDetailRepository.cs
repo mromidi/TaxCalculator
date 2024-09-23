@@ -4,6 +4,6 @@ namespace TaxCalculator.Domain.Repositories
 {
     public interface ICityRulesDetailRepository
     {
-        Task<CityRulesDetail> GetActiveCityRulesDetail();
+        Task<CityRulesDetail> GetActiveCityRulesDetail(int year, string city);
     }
 }

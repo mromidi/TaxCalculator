@@ -2,6 +2,6 @@
 {
     public interface ICalculateTaxService
     {
-        Task CalculateTaxForYear(int year, string cityName);
+        Task<List<string>> CalculateTaxForYear(int year, string cityName);
     }
 }

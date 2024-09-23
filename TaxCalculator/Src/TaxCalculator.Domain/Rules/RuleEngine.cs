@@ -11,9 +11,9 @@ namespace TaxCalculator.Domain.Rules
             _travelRules = travelRules;
         }
 
-        public decimal CalculateTaxAmount(VehicleEntry vehicleEntry)
+        public decimal CalculateTaxAmount(VehicleEntry vehicleEntry, TaxCalculationContext context)
         {
-            var context = new TaxCalculationContext();
+            
 
             foreach (var rule in _travelRules)
             {
@@ -25,6 +25,7 @@ namespace TaxCalculator.Domain.Rules
                         context.CurrentTaxAmount = 0;
                         break;
                     }
+                   
                 }
 
             }

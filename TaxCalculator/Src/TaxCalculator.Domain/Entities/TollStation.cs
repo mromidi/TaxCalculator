@@ -6,5 +6,7 @@ namespace TaxCalculator.Domain.Entities
     {
         public string Name { get; set; }
         public string City { get; set; }
+
+        public virtual ICollection<VehicleEntry> VehicleEntries { get; set; }
     }
 }
