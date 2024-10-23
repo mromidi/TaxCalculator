@@ -1,5 +1,4 @@
-﻿
-using TaxCalculator.Domain.Entities.Base;
+﻿using TaxCalculator.Domain.Entities.Base;
 using TaxCalculator.Domain.Enums;
 
 namespace TaxCalculator.Domain.Entities

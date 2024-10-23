@@ -35,7 +35,7 @@ namespace TaxCalculator.Domain.Rules
 
         private bool IsPublicHoliday(DateTime date)
         {
-            return _nonTaxablePeriods.PublicHolidays != null && _nonTaxablePeriods.PublicHolidays.Any(a => a.Date == date || a.Date.AddDays(-1) == date);
+            return _nonTaxablePeriods.PublicHolidays != null && _nonTaxablePeriods.PublicHolidays.Any(a => a.Date == date.Date || a.Date.AddDays(-1) == date.Date);
         }
 
         private bool IsJuly(DateTime date)
